@@ -29,7 +29,9 @@ public class Table {
                 }
             }
             System.out.println();
-            System.out.println(horizontalMark);
+            if (i != number) {
+                System.out.println(horizontalMark);
+            }
         }
     }
 
