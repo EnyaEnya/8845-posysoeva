@@ -1,36 +1,36 @@
 package ru.cft.focusstart;
 
-import java.util.Scanner;
+import java.io.IOException;
+import java.io.Writer;
 
 public class Table {
 
-    private int number;
+    private int size;
+    private Writer writer;
 
-    public void makeTable() {
-        System.out.print("Input an integer from 1 to 32: ");
-        Scanner in = new Scanner(System.in);
-        number = in.nextInt();
+    public void makeTable(int size, Writer writer) throws IOException {
+        this.writer = writer;
+        this.size = size;
         validate();
         renderTable();
-        in.close();
     }
 
-    private void renderTable() {
+    private void renderTable() throws IOException {
         String horizontalMark = markHorizontalBorders();
-        for (int i = 1; i <= number; i++) {
-            for (int b = 1; b <= number; b++) {
-                int result = i * b;
-                String space = getSpace(result);
-                System.out.print(space);
-                if (b != number) {
-                    System.out.printf("%d|", result);
+        for (int i = 1; i <= size; i++) {
+            for (int j = 1; j <= size; j++) {
+                int result = i * j;
+                String space = getSpaces(result);
+                writer.write(space);
+                if (j != size) {
+                    writer.write(String.format("%d|", result));
                 } else {
-                    System.out.print(result);
+                    writer.write(result);
                 }
             }
-            System.out.println();
-            if (i != number) {
-                System.out.println(horizontalMark);
+            writer.write("\n");
+            if (i != size) {
+                writer.write(horizontalMark + "\n");
             }
         }
     }
@@ -38,33 +38,33 @@ public class Table {
     private String markHorizontalBorders() {
         String mark = "";
         int numLength = countLongestNum();
-        for (int i = 0; i < number; i++) {
+        for (int i = 0; i < size; i++) {
             for (int j = 0; j < numLength; j++) {
                 mark += "-";
             }
-            if (i != number - 1) {
+            if (i != size - 1) {
                 mark += "+";
             }
         }
         return mark;
     }
 
-    private String getSpace(int result) {
-        String mark = "";
+    private String getSpaces(int result) {
+        String spaces = "";
         int resultSpaces = countLongestNum() - Integer.toString(result).length();
         for (int i = 0; i < resultSpaces; i++) {
-            mark += " ";
+            spaces += " ";
         }
-        return mark;
+        return spaces;
     }
 
     private int countLongestNum() {
-        int longestNum = number * number;
+        int longestNum = size * size;
         return Integer.toString(longestNum).length();
     }
 
     private void validate() {
-        if (number < 1 || number > 32) {
+        if (size < 1 || size > 32) {
             throw new IllegalArgumentException();
         }
     }
