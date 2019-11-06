@@ -11,10 +11,10 @@ public class Main {
 
         InputReader reader = new InputReader();
         Table table = new Table();
-        Writer writer = new PrintWriter(System.out);
 
-        try {
+        try (Writer writer = new PrintWriter(System.out)) {
             table.makeTable(reader.readInt("Input an integer from 1 to 32: "), writer);
+            writer.flush();
         } catch (InputMismatchException e) {
             System.out.println("Invalid input: Not an integer.");
         } catch (IllegalArgumentException e) {
