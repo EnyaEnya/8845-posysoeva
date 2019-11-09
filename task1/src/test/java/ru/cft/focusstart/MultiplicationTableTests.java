@@ -3,17 +3,23 @@ package ru.cft.focusstart;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class MultiplicationTableTests {
+
+    private InputReader reader = mock(InputReader.class);
+
+    @Test(expected = IllegalArgumentException.class)
+    public void rangeTestMock() throws IOException {
+        when(reader.readInt(anyString())).thenReturn(33);
+        TableBuilder tableBuilder = new TableBuilder();
+        tableBuilder.buildTable(reader, null);
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void rangeTest1() throws IOException {
@@ -38,8 +44,4 @@ public class MultiplicationTableTests {
                 "-+-+-\n" +
                 "3|6|9\n", writer.toString());
     }
-
-
-
-
 }
