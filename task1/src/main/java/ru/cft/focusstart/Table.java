@@ -25,7 +25,7 @@ public class Table {
                 if (j != size) {
                     writer.write(String.format("%d|", result));
                 } else {
-                    writer.write(result);
+                    writer.write(String.valueOf(result));
                 }
             }
             writer.write("\n");
