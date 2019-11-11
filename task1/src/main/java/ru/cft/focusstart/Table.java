@@ -8,14 +8,12 @@ public class Table {
     private int size;
     private Writer writer;
 
-    public void makeTable(int size, Writer writer) throws IOException {
-        this.writer = writer;
+    public Table(int size, Writer writer) {
         this.size = size;
-        validate();
-        renderTable();
+        this.writer = writer;
     }
 
-    private void renderTable() throws IOException {
+    public void renderTable() throws IOException {
         String horizontalMark = markHorizontalBorders();
         for (int i = 1; i <= size; i++) {
             for (int j = 1; j <= size; j++) {
@@ -63,9 +61,9 @@ public class Table {
         return Integer.toString(longestNum).length();
     }
 
-    private void validate() {
-        if (size < 1 || size > 32) {
-            throw new IllegalArgumentException();
-        }
-    }
+//    private void validate() {
+//        if (size < 1 || size > 32) {
+//            throw new IllegalArgumentException();
+//        }
+//    }
 }

@@ -15,29 +15,24 @@ public class MultiplicationTableTests {
     private InputReader reader = mock(InputReader.class);
 
     @Test(expected = IllegalArgumentException.class)
-    public void rangeTestMock() throws IOException {
+    public void rangeTest1() throws IOException {
         when(reader.readInt(anyString())).thenReturn(33);
         TableBuilder tableBuilder = new TableBuilder();
         tableBuilder.buildTable(reader, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void rangeTest1() throws IOException {
-        Table table = new Table();
-        table.makeTable(33, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void rangeTest2() throws IOException {
-        Table table = new Table();
-        table.makeTable(0, null);
+        when(reader.readInt(anyString())).thenReturn(0);
+        TableBuilder tableBuilder = new TableBuilder();
+        tableBuilder.buildTable(reader, null);
     }
 
     @Test
     public void tableTest() throws IOException {
-        Table table = new Table();
         StringWriter writer = new StringWriter();
-        table.makeTable(3, writer);
+        Table table = new Table(3, writer);
+        table.renderTable();
         Assert.assertEquals("1|2|3\n" +
                 "-+-+-\n" +
                 "2|4|6\n" +
