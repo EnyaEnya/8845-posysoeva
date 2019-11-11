@@ -61,9 +61,4 @@ public class Table {
         return Integer.toString(longestNum).length();
     }
 
-//    private void validate() {
-//        if (size < 1 || size > 32) {
-//            throw new IllegalArgumentException();
-//        }
-//    }
 }
