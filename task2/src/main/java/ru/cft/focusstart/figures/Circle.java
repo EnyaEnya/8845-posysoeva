@@ -1,11 +1,17 @@
 package ru.cft.focusstart.figures;
 
+import ru.cft.focusstart.exceptions.WrongParameterException;
+
 public class Circle implements Figure {
 
     private double radius;
 
     Circle(double radius) {
-        this.radius = radius;
+        if (radius < 0) {
+            throw new WrongParameterException();
+        } else {
+            this.radius = radius;
+        }
     }
 
     public String getTitle() {
@@ -32,10 +38,10 @@ public class Circle implements Figure {
 
     @Override
     public String toString() {
-        return "Тип фигуры: " + getTitle() + "\n" +
-                "Площадь: " + getSquare() + "\n" +
-                "Периметр: " + getPerimeter() + "\n" +
-                "Радиус: " + getRadius() + "\n" +
+        return "Тип фигуры: " + getTitle() + System.lineSeparator() +
+                "Площадь: " + getSquare() + System.lineSeparator() +
+                "Периметр: " + getPerimeter() + System.lineSeparator() +
+                "Радиус: " + getRadius() + System.lineSeparator() +
                 "Диаметр: " + getDiameter();
     }
 }

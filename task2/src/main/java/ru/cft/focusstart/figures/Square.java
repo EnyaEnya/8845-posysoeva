@@ -1,11 +1,17 @@
 package ru.cft.focusstart.figures;
 
+import ru.cft.focusstart.exceptions.WrongParameterException;
+
 public class Square implements Figure {
 
-    protected double width;
+    double width;
 
-    public Square(double width) {
-        this.width = width;
+    Square(double width) {
+        if (width < 0) {
+            throw new WrongParameterException();
+        } else {
+            this.width = width;
+        }
     }
 
     public String getTitle() {
@@ -29,10 +35,10 @@ public class Square implements Figure {
 
     @Override
     public String toString() {
-        return "Тип фигуры: " + getTitle() + "\n" +
-                "Площадь: " + getSquare() + "\n" +
-                "Периметр: " + getPerimeter() + "\n" +
-                "Сторона: " + width + "\n" +
+        return "Тип фигуры: " + getTitle() + System.lineSeparator() +
+                "Площадь: " + getSquare() + System.lineSeparator() +
+                "Периметр: " + getPerimeter() + System.lineSeparator() +
+                "Сторона: " + width + System.lineSeparator() +
                 "Диагональ: " + getDiagonal();
     }
 }

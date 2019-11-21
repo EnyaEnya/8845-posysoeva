@@ -34,11 +34,11 @@ public class Rectangle extends Square implements Figure {
 
     @Override
     public String toString() {
-        return "Тип фигуры: " + getTitle() + "\n" +
-                "Площадь: " + getSquare() + "\n" +
-                "Периметр: " + getPerimeter() + "\n" +
-                "Длина: " + length + "\n" +
-                "Ширина: " + width + "\n" +
+        return "Тип фигуры: " + getTitle() + System.lineSeparator() +
+                "Площадь: " + getSquare() + System.lineSeparator() +
+                "Периметр: " + getPerimeter() + System.lineSeparator() +
+                "Длина: " + length + System.lineSeparator() +
+                "Ширина: " + width + System.lineSeparator() +
                 "Диагональ: " + getDiagonal();
     }
 }

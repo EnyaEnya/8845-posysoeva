@@ -11,10 +11,10 @@ public class Main {
         System.exit(1);
     }
 
-    public static void main(String... args) {
+    public static void main(String[] args) {
         FigureService figureService = new FigureService();
         try {
-            figureService.createFigureWithParams(args);
+            figureService.displayDescriptionOfFigure(args);
         } catch (NoInputFileException e) {
             showExceptionMessage("There is no input file, add one input file");
         } catch (WrongStringIndexException e) {
@@ -25,6 +25,10 @@ public class Main {
             showExceptionMessage("Wrong type of figure");
         } catch (MissingRequiredParameterException e) {
             showExceptionMessage("There is no required parameter in input file");
+        } catch (IllegalArgumentException e) {
+            showExceptionMessage("Invalid data in input file");
+        } catch (WrongParameterException e) {
+            showExceptionMessage("Wrong value in figure parameters. Value must be greater than zero.");
         } catch (IOException |
                 RuntimeException e) {
             showExceptionMessage("Problem with input-output files");
