@@ -13,7 +13,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 class FigureService {
 
@@ -64,9 +63,7 @@ class FigureService {
     }
 
     private List<String> getStringList(File file) throws IOException {
-        try (Stream<String> stream = Files.lines(file.toPath())) {
-            return stream.collect(Collectors.toList());
-        }
+        return Files.readAllLines(file.toPath());
     }
 
     private void createOutputFigure(Figure figure, File outputFile) throws IOException {

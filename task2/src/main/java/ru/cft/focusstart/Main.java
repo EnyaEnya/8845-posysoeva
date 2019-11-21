@@ -8,7 +8,6 @@ public class Main {
 
     private static void showExceptionMessage(String message) {
         System.out.println(message);
-        System.exit(1);
     }
 
     public static void main(String[] args) {
