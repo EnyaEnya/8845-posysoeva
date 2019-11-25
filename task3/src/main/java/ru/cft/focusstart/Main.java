@@ -1,5 +1,7 @@
 package ru.cft.focusstart;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,11 +16,20 @@ public class Main {
     final static int CONSUMER_EXECUTION_TIME_MS = 500;
 
     private Main() {
+
+        BasicThreadFactory producerFactory = new BasicThreadFactory.Builder()
+                .namingPattern("ProducerThread №%d")
+                .build();
+
+        BasicThreadFactory consumerFactory = new BasicThreadFactory.Builder()
+                .namingPattern("ConsumerThread №%d")
+                .build();
+
         BlockingQueue<Resource> queue = new LinkedBlockingQueue<>(RESOURCE_STORE_CAPACITY);
         Producer producer = new Producer(queue);
-        ExecutorService producerPool = Executors.newFixedThreadPool(PRODUCER_THREADS);
+        ExecutorService producerPool = Executors.newFixedThreadPool(PRODUCER_THREADS, producerFactory);
         Consumer consumer = new Consumer(queue);
-        ExecutorService consumerPool = Executors.newFixedThreadPool(CONSUMER_THREADS);
+        ExecutorService consumerPool = Executors.newFixedThreadPool(CONSUMER_THREADS, consumerFactory);
         for (int i = 0; i < PRODUCER_THREADS; i++) {
             producerPool.execute(producer);
         }

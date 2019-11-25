@@ -23,9 +23,9 @@ class Producer implements Runnable {
             while (!Thread.interrupted()) {
                 Resource resource = new Resource();
                 queue.put(resource);
-                log.info("Resource {} has been produced", resource.getId());
-                log.info("Resource {} has been put to the store", resource.getId());
+                log.info("Resource {} has been produced ", resource.getId());
                 Thread.sleep(PRODUCER_EXECUTION_TIME_MS);
+                log.info("Resource {} has been put to the store ", resource.getId());
             }
         } catch (Exception e) {
             log.info("Producer interrupted");

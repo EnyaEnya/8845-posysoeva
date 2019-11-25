@@ -23,8 +23,8 @@ class Consumer implements Runnable {
             while (!Thread.interrupted()) {
                 long resourceId = queue.take().getId();
                 log.info("Resource {} has been taken from the store", resourceId);
-                log.info("Resource {} has been consumed", resourceId);
                 Thread.sleep(CONSUMER_EXECUTION_TIME_MS);
+                log.info("Resource {} has been consumed", resourceId);
             }
         } catch (InterruptedException e) {
             log.info("Consumer interrupted");
