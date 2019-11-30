@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Main {
 
+    private static final int ENTER_BUTTON = 13;
     private JFrame frame = new JFrame("Simple chat");
     private JTextField messageBox;
     private JTextArea chatBox;
@@ -91,7 +92,7 @@ public class Main {
         eastPanel.add(userListBox);
 
         JButton sendMessage = new JButton("Send Message");
-        sendMessage.setMnemonic(13);
+        sendMessage.setMnemonic(ENTER_BUTTON);
         southPanel.add(sendMessage);
 
         sendMessage.addActionListener(new MessageButtonListener());
