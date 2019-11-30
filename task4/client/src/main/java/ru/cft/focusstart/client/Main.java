@@ -65,7 +65,7 @@ public class Main {
         authorizationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         authorizationFrame.setSize(300, 300);
 
-        enterServer.addActionListener(new EnterServerButtonListener());
+        enterServer.addActionListener(new ServerButtonListener());
     }
 
     private void showChatScreen() {
@@ -94,13 +94,13 @@ public class Main {
         sendMessage.setMnemonic(13);
         southPanel.add(sendMessage);
 
-        sendMessage.addActionListener(new SendMessageButtonListener());
+        sendMessage.addActionListener(new MessageButtonListener());
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 600);
     }
 
-    class SendMessageButtonListener implements ActionListener {
+    class MessageButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             if (StringUtils.isBlank(messageBox.getText())) {
                 // do nothing
@@ -120,7 +120,7 @@ public class Main {
     private String ipAddress;
     private String port;
 
-    class EnterServerButtonListener implements ActionListener {
+    class ServerButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             username = usernameChooser.getText();
             ipAddress = ipAddressChooser.getText();
