@@ -12,6 +12,12 @@
     <artifactId>client</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>ru.cft.focusstart</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.miglayout</groupId>
             <artifactId>miglayout</artifactId>

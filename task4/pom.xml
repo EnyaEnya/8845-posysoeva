@@ -10,6 +10,7 @@
     <modules>
         <module>client</module>
         <module>server</module>
+        <module>common</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -23,6 +24,12 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>ru.cft.focusstart</groupId>
+                <artifactId>common</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.miglayout</groupId>
                 <artifactId>miglayout</artifactId>
                 <version>3.7.4</version>
@@ -33,6 +40,34 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>3.9</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.10.1</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>2.10.0</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.10.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>2.10.1</version>
+            </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 

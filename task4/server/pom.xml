@@ -11,6 +11,13 @@
 
     <artifactId>server</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>ru.cft.focusstart</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <finalName>task4-server</finalName>
         <plugins>
