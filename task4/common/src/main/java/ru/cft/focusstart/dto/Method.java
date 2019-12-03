@@ -10,6 +10,7 @@ import java.io.Serializable;
         use = JsonTypeInfo.Id.NAME,
         property = "method")
 @JsonSubTypes({
+        @JsonSubTypes.Type(value = AddUser.class, name = "addUser"),
         @JsonSubTypes.Type(value = ConnectUser.class, name = "connectUser"),
         @JsonSubTypes.Type(value = SendMessageFromUser.class, name = "sendMessageFromUser"),
         @JsonSubTypes.Type(value = GetUsersList.class, name = "getUsersList"),
