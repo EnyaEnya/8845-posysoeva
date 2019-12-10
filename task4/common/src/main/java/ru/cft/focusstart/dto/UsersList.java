@@ -1,16 +1,23 @@
 package ru.cft.focusstart.dto;
 
-import java.util.List;
+import java.util.Collection;
 
-public class UsersList {
+public class UsersList extends Response {
 
-    private List<String> usersList;
+    private Collection<String> usersList;
 
-    public List<String> getUsersList() {
+    public UsersList() {
+    }
+
+    public UsersList(Collection<String> usersList) {
+        this.usersList = usersList;
+    }
+
+    public Collection<String> getUsersList() {
         return usersList;
     }
 
-    public void setUsersList(List<String> usersList) {
+    public void setUsersList(Collection<String> usersList) {
         this.usersList = usersList;
     }
 }

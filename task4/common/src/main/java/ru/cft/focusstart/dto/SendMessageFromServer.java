@@ -13,6 +13,15 @@ public class SendMessageFromServer extends Method {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime time;
 
+    public SendMessageFromServer() {
+    }
+
+    public SendMessageFromServer(String user, String message) {
+        this.user = user;
+        this.message = message;
+        this.time = LocalDateTime.now();
+    }
+
     public String getUser() {
         return user;
     }
