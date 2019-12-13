@@ -39,6 +39,7 @@ public class Connection implements Runnable {
                 String message = null;
                 if (reader.ready()) {
                     message = reader.readLine();
+                    log.info("new message: {}", message);
                     lastEventTime = System.nanoTime();
                 }
                 if (message != null) {

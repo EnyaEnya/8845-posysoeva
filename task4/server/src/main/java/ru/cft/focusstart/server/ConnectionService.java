@@ -21,7 +21,7 @@ public class ConnectionService {
 
     public static final ConnectionService INSTANCE = new ConnectionService();
 
-    private static final long MAX_IDLE_TIME = TimeUnit.SECONDS.toNanos(60);
+    private static final long MAX_IDLE_TIME = TimeUnit.SECONDS.toNanos(15);
 
     private ConcurrentMap<String, Connection> usersStore = new ConcurrentHashMap<String, Connection>();
 
@@ -85,6 +85,7 @@ public class ConnectionService {
             connection.setUser(user);
             sendAll(new AddUser(user));
             usersStore.put(user, connection);
+            response.setUsersList(usersStore.keySet());
             response.setStatus(Status.OK);
         } else {
             response.setStatus(Status.ERROR);
@@ -101,7 +102,7 @@ public class ConnectionService {
     }
 
     private Response getUsersList() {
-        return new UsersList(usersStore.keySet());
+        return new Response(usersStore.keySet());
     }
 
     private void sendMessageFromUser(SendMessageFromUser sendMessageFromUser, Connection connection) throws JsonProcessingException {

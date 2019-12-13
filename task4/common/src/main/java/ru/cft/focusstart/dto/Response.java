@@ -1,12 +1,20 @@
 package ru.cft.focusstart.dto;
 
-public class Response {
+import java.util.Collection;
+
+public class Response extends Method {
 
     private Status status;
 
     private String errorText;
 
+    private Collection<String> usersList;
+
     public Response() {
+    }
+
+    public Response(Collection<String> usersList) {
+        this.usersList = usersList;
     }
 
     public Response(Status status) {
@@ -28,4 +36,14 @@ public class Response {
     public void setErrorText(String errorText) {
         this.errorText = errorText;
     }
+
+
+    public Collection<String> getUsersList() {
+        return usersList;
+    }
+
+    public void setUsersList(Collection<String> usersList) {
+        this.usersList = usersList;
+    }
+
 }

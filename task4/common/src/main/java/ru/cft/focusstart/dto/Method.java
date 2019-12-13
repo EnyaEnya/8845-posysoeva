@@ -16,7 +16,8 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = SendMessageFromUser.class, name = "sendMessageFromUser"),
         @JsonSubTypes.Type(value = GetUsersList.class, name = "getUsersList"),
         @JsonSubTypes.Type(value = RemoveUser.class, name = "removeUser"),
-        @JsonSubTypes.Type(value = SendMessageFromServer.class, name = "sendMessageFromServer")
+        @JsonSubTypes.Type(value = SendMessageFromServer.class, name = "sendMessageFromServer"),
+        @JsonSubTypes.Type(value = Response.class, name = "response")
 })
 public abstract class Method implements Serializable {
 
