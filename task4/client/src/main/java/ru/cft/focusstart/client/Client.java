@@ -11,14 +11,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class Client {
 
+    public static final Client INSTANCE = new Client();
+
     private static final Logger log = LoggerFactory.getLogger(Client.class);
     private static final int ENTER_BUTTON = 13;
-    public static JTextArea chatBox;
-    public static JTextArea usersListBox;
+    private JTextArea chatBox;
+    private JTextArea usersListBox;
     private JFrame frame = new JFrame("Simple chat");
+    private ConnectData connectData = new ConnectData();
     private JTextField messageBox;
     private JTextField usernameChooser;
     private JTextField ipAddressChooser;
@@ -27,7 +31,7 @@ public class Client {
     private JFrame errorFrame;
 
     public static void main(String[] args) {
-        log.info("chat started");
+        log.info("client started");
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -36,12 +40,10 @@ public class Client {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Client clientGUI = new Client();
-                clientGUI.showLoginScreen();
+                Client.INSTANCE.showLoginScreen();
             }
         });
     }
-
 
     private void showLoginScreen() {
         frame.setVisible(false);
@@ -76,12 +78,12 @@ public class Client {
         authorizationFrame.add(BorderLayout.SOUTH, enterServer);
         authorizationFrame.setVisible(true);
         authorizationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        authorizationFrame.setSize(300, 300);
+        authorizationFrame.setSize(400, 300);
 
         enterServer.addActionListener(new ServerButtonListener());
     }
 
-    private void showChatScreen() {
+    public void showChatScreen() {
         frame.setVisible(true);
 
         JPanel southPanel = new JPanel();
@@ -97,7 +99,7 @@ public class Client {
         chatBox.setLineWrap(true);
         frame.add(new JScrollPane(chatBox), BorderLayout.CENTER);
 
-        usersListBox = new JTextArea(60,15);
+        usersListBox = new JTextArea(60, 15);
         usersListBox.setEditable(false);
         usersListBox.setLineWrap(true);
 
@@ -113,15 +115,44 @@ public class Client {
         frame.setSize(1200, 600);
     }
 
-    private void showErrorScreen() {
+    public void showErrorScreen(String message) {
         frame.setVisible(false);
-        errorFrame = new JFrame("Wrong data!");
 
+        errorFrame = new JFrame("Error!");
 
+        JButton okButton = new JButton("Ok");
+        okButton.addActionListener(new onCloseErrorScreenListener());
+
+        JLabel errorText = new JLabel(message);
 
         errorFrame.setVisible(true);
-        errorFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        errorFrame.setSize(300, 300);
+        errorFrame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        errorFrame.setSize(400, 300);
+        errorFrame.add(errorText, BorderLayout.CENTER);
+        errorFrame.add(okButton, BorderLayout.SOUTH);
+    }
+
+    public void addUser(String newUser) {
+        usersListBox.setText("");
+        chatBox.append(newUser + " joined to our chat!" + System.lineSeparator());
+        usersListBox.append(ClientService.INSTANCE.formatUsersList());
+    }
+
+    public void showNewMessage(LocalDateTime time, String user, String message) {
+        String resultMessage = time + " <" + user + ">: "
+                + message + System.lineSeparator();
+        chatBox.append(resultMessage);
+    }
+
+    public void removeUser(String removedUser) {
+        usersListBox.setText("");
+        chatBox.append(removedUser + " left our chat" + System.lineSeparator());
+        usersListBox.append(ClientService.INSTANCE.formatUsersList());
+    }
+
+    public void updateUsersList() {
+        usersListBox.setText("");
+        usersListBox.append(ClientService.INSTANCE.formatUsersList());
     }
 
     class MessageButtonListener implements ActionListener {
@@ -131,7 +162,7 @@ public class Client {
             } else {
                 String message = messageBox.getText();
                 try {
-                    ClientService.getInstance().sendMessage(message);
+                    ClientService.INSTANCE.sendMessage(message);
                     messageBox.setText("");
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
@@ -140,13 +171,10 @@ public class Client {
         }
     }
 
-    private ConnectData connectData = new ConnectData();
-    private String user;
-
     class ServerButtonListener implements ActionListener {
 
         public void actionPerformed(ActionEvent event) {
-            user = usernameChooser.getText();
+            String user = usernameChooser.getText();
             String ipAddress = ipAddressChooser.getText();
             int port = Integer.parseInt(portChooser.getText());
 
@@ -156,17 +184,23 @@ public class Client {
 
             if (user.length() < 1) {
                 authorizationFrame.setVisible(false);
-                showErrorScreen();
+                showErrorScreen("Invalid username");
             } else {
                 authorizationFrame.setVisible(false);
-                showChatScreen();
-            }
-            try {
-                ClientService.getInstance().connectUser(connectData);
-            } catch (IOException e) {
-                e.printStackTrace();
+                try {
+                    ClientService.INSTANCE.connectUser(connectData);
+                    showChatScreen();
+                } catch (IOException e) {
+                    showErrorScreen(e.getMessage());
+                }
             }
         }
+    }
 
+    class onCloseErrorScreenListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            showLoginScreen();
+            errorFrame.setVisible(false);
+        }
     }
 }

@@ -15,36 +15,33 @@ public class ClientConnection implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(ClientConnection.class);
 
-    private static final long MAX_IDLE_TIME = TimeUnit.SECONDS.toNanos(5);
-
-    private Socket socket;
+    private static final long MAX_IDLE_TIME = TimeUnit.SECONDS.toNanos(2);
 
     private BufferedReader reader;
 
-    private PrintWriter writer;
-
     private boolean interrupted = false;
 
-    private long lastMessage;
+    private long lastEventTime;
+
+    private PrintWriter writer;
 
     public ClientConnection(Socket socket) throws IOException {
-        this.socket = socket;
-        this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.lastMessage = System.nanoTime();
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        writer = new PrintWriter(socket.getOutputStream());
+        lastEventTime = System.nanoTime();
     }
 
     @Override
     public void run() {
         while (!interrupted) {
-            if (lastMessage < System.nanoTime() - MAX_IDLE_TIME) {
+            if (lastEventTime < System.nanoTime() - MAX_IDLE_TIME) {
                 log.info("Heartbeat");
                 try {
-                    ClientService.getInstance().makeHeartbeat();
-                    //ClientService.getInstance().getUsersList();
+                    ClientService.INSTANCE.makeHeartbeat();
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-                lastMessage = System.nanoTime();
+                lastEventTime = System.nanoTime();
             }
             try {
                 String message = null;
@@ -53,7 +50,7 @@ public class ClientConnection implements Runnable {
                 }
                 if (message != null) {
                     log.info(message);
-                    ClientService.getInstance().doService(message);
+                    ClientService.INSTANCE.doService(message);
                 }
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
@@ -65,6 +62,11 @@ public class ClientConnection implements Runnable {
             }
         }
         log.info("Connection {} closed", Thread.currentThread().getName());
+    }
+
+    public void write(String jsonString) {
+        writer.println(jsonString);
+        writer.flush();
     }
 
 }

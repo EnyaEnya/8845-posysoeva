@@ -58,7 +58,7 @@ public class Connection implements Runnable {
         log.info("Connection {} closed", Thread.currentThread().getName());
     }
 
-    public void writeResponse(String response) {
+    public void write(String response) {
         writer.println(response);
         writer.flush();
     }

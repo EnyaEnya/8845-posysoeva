@@ -21,7 +21,7 @@ public class ConnectionService {
 
     public static final ConnectionService INSTANCE = new ConnectionService();
 
-    private static final long MAX_IDLE_TIME = TimeUnit.SECONDS.toNanos(15);
+    private static final long MAX_IDLE_TIME = TimeUnit.SECONDS.toNanos(5);
 
     private ConcurrentMap<String, Connection> usersStore = new ConcurrentHashMap<String, Connection>();
 
@@ -111,10 +111,10 @@ public class ConnectionService {
 
     private void sendAll(Object object) throws JsonProcessingException {
         String userMessage = mapper.writeValueAsString(object);
-        usersStore.forEach((k, v) -> v.writeResponse(userMessage));
+        usersStore.forEach((k, v) -> v.write(userMessage));
     }
 
     private void write(Response response, Connection connection) throws JsonProcessingException {
-        connection.writeResponse(mapper.writeValueAsString(response));
+        connection.write(mapper.writeValueAsString(response));
     }
 }
