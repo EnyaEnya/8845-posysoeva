@@ -1,7 +1,5 @@
 package ru.cft.focusstart.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.time.LocalDateTime;
 
 public class SendMessageFromServer extends Method {
@@ -10,7 +8,6 @@ public class SendMessageFromServer extends Method {
 
     private String message;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime time;
 
     public SendMessageFromServer() {

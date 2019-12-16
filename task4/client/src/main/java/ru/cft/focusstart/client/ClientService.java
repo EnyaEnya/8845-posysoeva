@@ -9,6 +9,7 @@ import ru.cft.focusstart.dto.*;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -54,7 +55,9 @@ public class ClientService {
     }
 
     private void showNewMessage(SendMessageFromServer messageFromServer) {
-        Client.INSTANCE.showNewMessage(messageFromServer.getTime(), messageFromServer.getUser(), messageFromServer.getMessage());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        Client.INSTANCE.showNewMessage(dtf.format(messageFromServer.getTime()), messageFromServer.getUser(),
+                messageFromServer.getMessage());
     }
 
     private void addUser(AddUser addUser) {
@@ -84,7 +87,7 @@ public class ClientService {
             } else if (readValue instanceof RemoveUser) {
                 removeUser((RemoveUser) readValue);
             } else if (readValue instanceof Response) {
-                updateUsersList((Response) readValue);
+                checkResponseStatus((Response) readValue);
             } else {
                 log.error("invalid type: {}", readValue);
             }
@@ -93,12 +96,12 @@ public class ClientService {
         }
     }
 
-    private void updateUsersList(Response response) {
+    private void checkResponseStatus(Response response) {
         if (response.getStatus() != Status.ERROR) {
             users = response.getUsersList();
             Client.INSTANCE.updateUsersList();
         } else {
-            Client.INSTANCE.showErrorScreen("This username is already taken");
+            Client.INSTANCE.showErrorScreen(response.getErrorText());
         }
     }
 

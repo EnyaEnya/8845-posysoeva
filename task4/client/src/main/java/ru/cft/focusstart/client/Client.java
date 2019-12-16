@@ -11,7 +11,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 public class Client {
 
@@ -138,9 +137,8 @@ public class Client {
         usersListBox.append(ClientService.INSTANCE.formatUsersList());
     }
 
-    public void showNewMessage(LocalDateTime time, String user, String message) {
-        String resultMessage = time + " <" + user + ">: "
-                + message + System.lineSeparator();
+    public void showNewMessage(String time, String user, String message) {
+        String resultMessage = time + " <" + user + ">: " + message + System.lineSeparator();
         chatBox.append(resultMessage);
     }
 
