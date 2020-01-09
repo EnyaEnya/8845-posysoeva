@@ -1,6 +1,7 @@
 package ru.cft.focusstart.repository.customer;
 
 import ru.cft.focusstart.entity.Customer;
+import ru.cft.focusstart.entity.Order;
 import ru.cft.focusstart.repository.DataAccessException;
 import ru.cft.focusstart.repository.DataSourceProvider;
 
@@ -163,5 +164,9 @@ public class JdbcCustomerRepository implements CustomerRepository {
             result.add(customer);
         }
         return result;
+    }
+
+    private Collection<Order> readOrdersList(ResultSet rs) throws SQLException {
+        return null;
     }
 }
