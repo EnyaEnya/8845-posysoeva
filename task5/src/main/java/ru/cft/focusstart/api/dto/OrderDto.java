@@ -3,6 +3,7 @@ package ru.cft.focusstart.api.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,6 +14,8 @@ public class OrderDto {
 
     private List<OrderEntityDto> orderEntities;
 
+    private Long customerId;
+
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
 
@@ -20,12 +23,15 @@ public class OrderDto {
 
         private List<OrderEntityDto> orderEntities;
 
+        private Long customerId;
+
         private Builder() {
         }
 
         private Builder(OrderDto orderDto) {
             this.id = orderDto.id;
             this.orderEntities = orderDto.orderEntities;
+            this.customerId = orderDto.customerId;
         }
 
         public OrderDto.Builder id(Long id) {
@@ -38,14 +44,25 @@ public class OrderDto {
             return this;
         }
 
+        public OrderDto.Builder customerId(Long customerId) {
+            this.customerId = customerId;
+            return this;
+        }
+
         public OrderDto build() {
-            return new OrderDto(this.id, this.orderEntities);
+            return new OrderDto(this.id, this.orderEntities, this.customerId);
         }
     }
 
-    public OrderDto(Long id, List<OrderEntityDto> orderEntities) {
+    public OrderDto(Long customerId) {
+        this.customerId = customerId;
+        this.orderEntities = new ArrayList<>();
+    }
+
+    public OrderDto(Long id, List<OrderEntityDto> orderEntities, Long customerId) {
         this.id = id;
         this.orderEntities = orderEntities;
+        this.customerId = customerId;
     }
 
     public static OrderDto.Builder builder() {
@@ -72,18 +89,27 @@ public class OrderDto {
         this.orderEntities = orderEntities;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderDto orderDto = (OrderDto) o;
         return Objects.equals(id, orderDto.id) &&
-                Objects.equals(orderEntities, orderDto.orderEntities);
+                Objects.equals(orderEntities, orderDto.orderEntities) &&
+                Objects.equals(customerId, orderDto.customerId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, orderEntities);
+        return Objects.hash(id, orderEntities, customerId);
     }
 
     @Override
@@ -91,6 +117,7 @@ public class OrderDto {
         return "OrderDto{" +
                 "id=" + id +
                 ", orderEntities=" + orderEntities +
+                ", customerId=" + customerId +
                 '}';
     }
 }

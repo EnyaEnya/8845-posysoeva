@@ -12,7 +12,8 @@ public interface OrderService {
 
     List<OrderDto> getByCustomerId(Long customerId);
 
-    OrderDto merge(Long id, OrderDto orderDto);
+    OrderDto merge(OrderDto orderDto);
 
     void delete(Long id);
+
 }

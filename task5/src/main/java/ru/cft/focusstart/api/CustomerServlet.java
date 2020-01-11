@@ -20,8 +20,9 @@ public class CustomerServlet extends HttpServlet {
 
     private static final String CUSTOMERS_PATTERN = "^/customers";
     private static final String CUSTOMER_PATTERN = "^/customers/(?<customerId>[0-9]+)$";
-    private static final String ORDERS_PATTERN = "^/customers/(?<customerId>[0-9]+)/order$";
-    private static final String ORDER_PATTERN = "^/customers/(?<customerId>[0-9]+)/order/(?<orderId>[0-9]+)$";
+    private static final String ORDERS_PATTERN = "^/customers/(?<customerId>[0-9]+)/orders$";
+    private static final String ORDER_PATTERN = "^/customers/(?<customerId>[0-9]+)/orders/(?<orderId>[0-9]+)$";
+    private static final String PUT_ORDER_PATTERN = "^/customers/orders";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -71,8 +72,8 @@ public class CustomerServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             String path = getPath(req);
-            if (path.matches(ORDER_PATTERN)) {
-
+            if (path.matches(PUT_ORDER_PATTERN)) {
+                mergeOrder(req, resp);
             } else if (path.matches(CUSTOMER_PATTERN)) {
                 merge(req, resp);
             } else {
@@ -87,7 +88,9 @@ public class CustomerServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             String path = getPath(req);
-            if (path.matches(CUSTOMER_PATTERN)) {
+            if (path.matches(ORDER_PATTERN)) {
+                deleteOrder(req, resp);
+            } else if (path.matches(CUSTOMER_PATTERN)) {
                 delete(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -151,16 +154,23 @@ public class CustomerServlet extends HttpServlet {
     }
 
     private void mergeOrder(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Long customerId = getPathPart(getPath(req), ORDER_PATTERN, "customerId");
-        Long orderId = getPathPart(getPath(req), ORDER_PATTERN, "orderId");
+        OrderDto request = mapper.readValue(req.getInputStream(), OrderDto.class);
 
-
+        OrderDto response = orderService.merge(request);
+        writeResp(resp, response);
     }
 
     private void delete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long customerId = getPathPart(getPath(req), CUSTOMER_PATTERN, "customerId");
 
         customerService.delete(customerId);
+    }
+
+
+    private void deleteOrder(HttpServletRequest req, HttpServletResponse resp) {
+        Long orderId = getPathPart(getPath(req), ORDER_PATTERN, "orderId");
+
+        orderService.delete(orderId);
     }
 
     private String getPath(HttpServletRequest req) {

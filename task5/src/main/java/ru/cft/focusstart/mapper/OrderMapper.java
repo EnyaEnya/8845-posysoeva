@@ -22,6 +22,7 @@ public class OrderMapper {
         return OrderDto.builder()
                 .id(order.getId())
                 .orderEntities(order.getOrderEntities().stream().map(this::toDto).collect(Collectors.toList()))
+                .customerId(order.getCustomerId())
                 .build();
     }
 

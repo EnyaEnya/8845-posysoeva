@@ -1,6 +1,8 @@
 package ru.cft.focusstart.entity;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Order {
 
@@ -9,6 +11,10 @@ public class Order {
     private Long customerId;
 
     private List<OrderEntity> orderEntities;
+
+    public Order() {
+        this.orderEntities = new ArrayList<>();
+    }
 
     public Long getId() {
         return id;
@@ -32,5 +38,29 @@ public class Order {
 
     public void setOrderEntities(List<OrderEntity> orderEntities) {
         this.orderEntities = orderEntities;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return Objects.equals(id, order.id) &&
+                Objects.equals(customerId, order.customerId) &&
+                Objects.equals(orderEntities, order.orderEntities);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, customerId, orderEntities);
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", customerId=" + customerId +
+                ", orderEntities=" + orderEntities +
+                '}';
     }
 }

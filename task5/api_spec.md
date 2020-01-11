@@ -16,18 +16,11 @@
   * [GET /customers/{id}](#get-customersid)
   * [DELETE /customers/{id}](#delete-customersid)
     
-  * [POST /order](#post-order)
-  * [GET /orders](#get-orders)
-  * [GET /orders/{id}](#get-ordersid)
-  * [DELETE /orders/{id}](#delete-ordersid)
+  * [POST /customers/{id}/orders](#post-customerorder)
+  * [GET /customers/{id}/orders](#get-customerorder)
+  * [PUT /customers/{id}/orders/{id}](#put-customerorder)
+  * [DELETE /customers/{id}/orders/{id}](#delete-customerorder)
   
-  * [GET /products/{id}/customers](#get-authorsidbooks)
-  * [PUT /products/{id}](#put-authorsid)
-  * [POST /customers](#post-customers)
-  * [GET /customers](#get-customers)
-  * [GET /customers/{id}](#get-booksid)
-  * [PUT /customers/{id}](#put-booksid)
-  * [DELETE /customers/{id}](#delete-booksid)
 * [Список ошибок](#список-ошибок)
 
 ## Общие положения
@@ -90,7 +83,7 @@
 #### Тело запроса
 Данные товара за исключением идентификатора.
 #### Ответ
-[Product](#product)
+[[ Product](#product)]
 #### Ошибки
 | Код  | Комментарий |
 | --- | --- |
@@ -100,10 +93,6 @@
 
 ### GET /products
 Возвращает товары, удовлетворяющие условиям фильтра.
-#### Параметры запроса
-| Параметр | Тип данных | Обязательное | Комментарий |
-| --- | --- | --- | --- |
-| title | string | нет | Название товара. |
 #### Ответ
 [ [Product](#product) ]
 #### Ошибки
@@ -142,10 +131,6 @@
 
 ### GET /customers
 Возвращает заказчиков, удовлетворяющих условиям фильтра.
-#### Параметры запроса
-| Параметр | Тип данных | Обязательное | Комментарий |
-| --- | --- | --- | --- |
-| title | string | нет | Название товара. |
 #### Ответ
 [ [Customer](#customer) ]
 #### Ошибки
@@ -188,10 +173,6 @@
 
 ### GET /orders/{id}
 Возвращает заказы с заданным идентификатором.
-#### Параметры запроса
-| Параметр | Тип данных | Обязательное | Комментарий |
-| --- | --- | --- | --- |
-| title | string | нет | Название товара. |
 #### Ответ
 [ [Order](#order) ]
 #### Ошибки
@@ -200,11 +181,6 @@
 | 1 | Внутренняя ошибка. |
 | 2 | Некорректные значения параметров. |
 | 3 | Сервис недоступен. |
-
-#### Параметры запроса
-| Параметр | Тип данных | Обязательное | Комментарий |
-| --- | --- | --- | --- |
-| title | string | нет | Название товара. |
 #### Ответ
 [ [Customer](#customer) ]
 #### Ошибки
@@ -257,11 +233,7 @@
 
 ### GET /customers
 Возвращает книги, удовлетворяющие условиям фильтра.
-#### Параметры запроса
-| Параметр | Тип данных | Обязательное | Комментарий |
-| --- | --- | --- | --- |
-| name | string | нет | Название книги. |
-| authorName | string | нет | Имя автора книги. |
+
 #### Ответ
 [ [Book](#customer) ]
 #### Ошибки

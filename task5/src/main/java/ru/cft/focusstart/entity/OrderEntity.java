@@ -6,11 +6,11 @@ public class OrderEntity {
 
     private Long id;
 
+    private Long orderId;
+
     private Long value;
 
     private Long productId;
-
-    private Long orderId;
 
     public Long getId() {
         return id;
@@ -18,6 +18,14 @@ public class OrderEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     public Long getValue() {
@@ -36,37 +44,29 @@ public class OrderEntity {
         this.productId = productId;
     }
 
-    public Long getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderEntity that = (OrderEntity) o;
         return Objects.equals(id, that.id) &&
+                Objects.equals(orderId, that.orderId) &&
                 Objects.equals(value, that.value) &&
-                Objects.equals(productId, that.productId) &&
-                Objects.equals(orderId, that.orderId);
+                Objects.equals(productId, that.productId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, value, productId, orderId);
+        return Objects.hash(id, orderId, value, productId);
     }
 
     @Override
     public String toString() {
         return "OrderEntity{" +
                 "id=" + id +
+                ", orderId=" + orderId +
                 ", value=" + value +
                 ", productId=" + productId +
-                ", orderId=" + orderId +
                 '}';
     }
 }
