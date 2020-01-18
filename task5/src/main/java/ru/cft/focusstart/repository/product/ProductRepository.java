@@ -1,19 +1,12 @@
 package ru.cft.focusstart.repository.product;
 
 import ru.cft.focusstart.entity.Product;
+import ru.cft.focusstart.repository.EntityRepository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface ProductRepository {
-
-    void add(Product product);
-
-    Optional<Product> getById(Long id);
+public interface ProductRepository extends EntityRepository<Product> {
 
     List<Product> get(String title);
 
-    void update(Product product);
-
-    void delete(Product product);
 }

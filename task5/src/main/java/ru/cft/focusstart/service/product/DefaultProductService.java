@@ -2,17 +2,17 @@ package ru.cft.focusstart.service.product;
 
 import ru.cft.focusstart.api.dto.ProductDto;
 import ru.cft.focusstart.entity.Product;
-import ru.cft.focusstart.exception.ObjectNotFoundException;
 import ru.cft.focusstart.mapper.ProductMapper;
 import ru.cft.focusstart.repository.product.JdbcProductRepository;
 import ru.cft.focusstart.repository.product.ProductRepository;
+import ru.cft.focusstart.service.AbstractService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.cft.focusstart.service.validation.Validator.*;
 
-public class DefaultProductService implements ProductService {
+public class DefaultProductService extends AbstractService<Product, ProductDto, ProductRepository, ProductMapper> implements ProductService {
 
     private static final DefaultProductService INSTANCE = new DefaultProductService();
 
@@ -28,19 +28,15 @@ public class DefaultProductService implements ProductService {
     }
 
     @Override
+    public ProductMapper getMapper() {
+        return productMapper;
+    }
+
+    @Override
     public ProductDto create(ProductDto productDto) {
         validate(productDto);
 
         Product product = add(null, productDto);
-
-        return productMapper.toDto(product);
-    }
-
-    @Override
-    public ProductDto getById(Long id) {
-        checkNotNull("id", id);
-
-        Product product = getProduct(id);
 
         return productMapper.toDto(product);
     }
@@ -66,10 +62,8 @@ public class DefaultProductService implements ProductService {
     }
 
     @Override
-    public void delete(Long id) {
-        checkNotNull("id", id);
-        Product product = getProduct(id);
-        productRepository.delete(product);
+    protected ProductRepository getRepository() {
+        return productRepository;
     }
 
     private void validate(ProductDto productDto) {
@@ -84,7 +78,7 @@ public class DefaultProductService implements ProductService {
         Product product;
 
         if (id != null) {
-            product = getProduct(id);
+            product = getEntity(id);
         } else {
             product = new Product();
         }
@@ -96,10 +90,6 @@ public class DefaultProductService implements ProductService {
         return product;
     }
 
-    private Product getProduct(Long id) {
-        return productRepository.getById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(String.format("Product with id %s not found", id)));
-    }
 
     private Product update(Product product, ProductDto productDto) {
         product.setTitle(productDto.getTitle());

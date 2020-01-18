@@ -36,14 +36,14 @@ public class CustomerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             String path = getPath(req);
-            if (path.matches(ORDERS_PATTERN)) {
-                getOrdersById(req, resp);
-            } else if (path.matches(ORDER_PATTERN)) {
-                getOrderById(req, resp);
-            } else if (path.matches(CUSTOMERS_PATTERN)) {
-                get(req, resp);
+            if (path.matches(CUSTOMERS_PATTERN)) {
+                getCustomers(req, resp);
             } else if (path.matches(CUSTOMER_PATTERN)) {
-                getById(req, resp);
+                getCustomerById(req, resp);
+            } else if (path.matches(ORDERS_PATTERN)) {
+                getAllOrdersByCustomerId(req, resp);
+            } else if (path.matches(ORDER_PATTERN)) {
+                getOrderByCustomerId(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -56,10 +56,10 @@ public class CustomerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             String path = getPath(req);
-            if (path.matches(ORDERS_PATTERN)) {
+            if (path.matches(CUSTOMERS_PATTERN)) {
+                createCustomer(req, resp);
+            } else if (path.matches(ORDERS_PATTERN)) {
                 createOrder(req, resp);
-            } else if (path.matches(CUSTOMERS_PATTERN)) {
-                create(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -72,10 +72,10 @@ public class CustomerServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             String path = getPath(req);
-            if (path.matches(PUT_ORDER_PATTERN)) {
-                mergeOrder(req, resp);
-            } else if (path.matches(CUSTOMER_PATTERN)) {
-                merge(req, resp);
+            if (path.matches(CUSTOMER_PATTERN)) {
+                updateCustomer(req, resp);
+            } else if (path.matches(PUT_ORDER_PATTERN)) {
+                updateOrder(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -88,10 +88,10 @@ public class CustomerServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             String path = getPath(req);
-            if (path.matches(ORDER_PATTERN)) {
+            if (path.matches(CUSTOMER_PATTERN)) {
+                deleteCustomer(req, resp);
+            } else if (path.matches(ORDER_PATTERN)) {
                 deleteOrder(req, resp);
-            } else if (path.matches(CUSTOMER_PATTERN)) {
-                delete(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -100,7 +100,7 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
-    private void create(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void createCustomer(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         CustomerDto request = mapper.readValue(req.getInputStream(), CustomerDto.class);
 
         CustomerDto response = customerService.create(request);
@@ -114,30 +114,30 @@ public class CustomerServlet extends HttpServlet {
         writeResp(resp, response);
     }
 
-    private void getById(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void getCustomerById(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long customerId = getPathPart(getPath(req), CUSTOMER_PATTERN, "customerId");
 
         CustomerDto response = customerService.getById(customerId);
         writeResp(resp, response);
     }
 
-    private void getOrdersById(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void getAllOrdersByCustomerId(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long customerId = getPathPart(getPath(req), ORDERS_PATTERN, "customerId");
 
         List<OrderDto> response = orderService.getByCustomerId(customerId);
         writeResp(resp, response);
     }
 
-    private void getOrderById(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void getOrderByCustomerId(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = getPath(req);
         Long customerId = getPathPart(path, ORDER_PATTERN, "customerId");
         Long orderId = getPathPart(path, ORDER_PATTERN, "orderId");
 
-        OrderDto response = orderService.getById(customerId, orderId);
+        OrderDto response = orderService.getById(orderId);
         writeResp(resp, response);
     }
 
-    private void get(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void getCustomers(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String firstName = req.getParameter("firstName");
         String lastName = req.getParameter("lastName");
 
@@ -145,7 +145,7 @@ public class CustomerServlet extends HttpServlet {
         writeResp(resp, response);
     }
 
-    private void merge(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void updateCustomer(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long customerId = getPathPart(getPath(req), CUSTOMER_PATTERN, "customerId");
         CustomerDto request = mapper.readValue(req.getInputStream(), CustomerDto.class);
 
@@ -153,14 +153,14 @@ public class CustomerServlet extends HttpServlet {
         writeResp(resp, response);
     }
 
-    private void mergeOrder(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void updateOrder(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         OrderDto request = mapper.readValue(req.getInputStream(), OrderDto.class);
 
         OrderDto response = orderService.merge(request);
         writeResp(resp, response);
     }
 
-    private void delete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void deleteCustomer(HttpServletRequest req, HttpServletResponse resp) {
         Long customerId = getPathPart(getPath(req), CUSTOMER_PATTERN, "customerId");
 
         customerService.delete(customerId);

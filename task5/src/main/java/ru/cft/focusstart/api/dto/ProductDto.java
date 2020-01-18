@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.Objects;
 
 @JsonDeserialize(builder = ProductDto.Builder.class)
-public class ProductDto {
-
-    private final Long id;
+public class ProductDto extends AbstractEntityDto {
 
     private final String title;
 
@@ -31,7 +29,7 @@ public class ProductDto {
         }
 
         private Builder(ProductDto productDto) {
-            this.id = productDto.id;
+            this.id = productDto.getId();
             this.title = productDto.title;
             this.price = productDto.price;
             this.description = productDto.description;
@@ -63,7 +61,7 @@ public class ProductDto {
     }
 
     private ProductDto(Long id, String title, long price, String description) {
-        this.id = id;
+        super(id);
         this.title = title;
         this.price = price;
         this.description = description;
@@ -75,10 +73,6 @@ public class ProductDto {
 
     public Builder toBuilder() {
         return new Builder(this);
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getTitle() {
@@ -98,7 +92,7 @@ public class ProductDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductDto productDto = (ProductDto) o;
-        return Objects.equals(id, productDto.id) &&
+        return Objects.equals(this.getId(), productDto.getId()) &&
                 Objects.equals(title, productDto.title) &&
                 Objects.equals(price, productDto.price) &&
                 Objects.equals(description, productDto.description);
@@ -106,13 +100,13 @@ public class ProductDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, price, description);
+        return Objects.hash(this.getId(), title, price, description);
     }
 
     @Override
     public String toString() {
         return "ProductDto{" +
-                "id=" + id +
+                "id=" + this.getId() +
                 ", title='" + title + '\'' +
                 ", price='" + price + '\'' +
                 ", description='" + description + '\'' +

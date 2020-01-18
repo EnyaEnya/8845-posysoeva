@@ -3,7 +3,7 @@ package ru.cft.focusstart.mapper;
 import ru.cft.focusstart.api.dto.ProductDto;
 import ru.cft.focusstart.entity.Product;
 
-public class ProductMapper {
+public class ProductMapper extends AbstractEntityMapper<Product, ProductDto> {
 
     private static final ProductMapper INSTANCE = new ProductMapper();
 

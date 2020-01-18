@@ -2,27 +2,27 @@ package ru.cft.focusstart.service.customer;
 
 import ru.cft.focusstart.api.dto.CustomerDto;
 import ru.cft.focusstart.entity.Customer;
-import ru.cft.focusstart.exception.ObjectNotFoundException;
 import ru.cft.focusstart.mapper.CustomerMapper;
 import ru.cft.focusstart.repository.customer.CustomerRepository;
 import ru.cft.focusstart.repository.customer.JdbcCustomerRepository;
-import ru.cft.focusstart.repository.product.JdbcProductRepository;
-import ru.cft.focusstart.repository.product.ProductRepository;
+import ru.cft.focusstart.service.AbstractService;
+import ru.cft.focusstart.service.order.DefaultOrderService;
+import ru.cft.focusstart.service.order.OrderService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.cft.focusstart.service.validation.Validator.*;
 
-public class DefaultCustomerService implements CustomerService {
+public class DefaultCustomerService extends AbstractService<Customer, CustomerDto, CustomerRepository, CustomerMapper> implements CustomerService {
 
     private static final DefaultCustomerService INSTANCE = new DefaultCustomerService();
-
-    private final ProductRepository productRepository = JdbcProductRepository.getInstance();
 
     private final CustomerRepository customerRepository = JdbcCustomerRepository.getInstance();
 
     private final CustomerMapper customerMapper = CustomerMapper.getInstance();
+
+    private final OrderService orderService = DefaultOrderService.getInstance();
 
     private DefaultCustomerService() {
     }
@@ -32,19 +32,15 @@ public class DefaultCustomerService implements CustomerService {
     }
 
     @Override
+    public CustomerMapper getMapper() {
+        return customerMapper;
+    }
+
+    @Override
     public CustomerDto create(CustomerDto customerDto) {
         validate(customerDto);
 
         Customer customer = add(null, customerDto);
-
-        return customerMapper.toDto(customer);
-    }
-
-    @Override
-    public CustomerDto getById(Long id) {
-        checkNotNull("id", id);
-
-        Customer customer = getCustomer(id);
 
         return customerMapper.toDto(customer);
     }
@@ -70,10 +66,8 @@ public class DefaultCustomerService implements CustomerService {
     }
 
     @Override
-    public void delete(Long id) {
-        checkNotNull("id", id);
-        Customer customer = getCustomer(id);
-        customerRepository.delete(customer);
+    protected CustomerRepository getRepository() {
+        return customerRepository;
     }
 
     private void validate(CustomerDto customerDto) {
@@ -84,12 +78,18 @@ public class DefaultCustomerService implements CustomerService {
         checkSize("customer.phone", customerDto.getPhone(), 1, 15);
     }
 
+    @Override
+    public void delete(Long id) {
+        orderService.getByCustomerId(id).forEach(orderDto -> orderService.delete(orderDto.getId()));
+        super.delete(id);
+    }
+
     private Customer add(Long id, CustomerDto customerDto) {
 
         Customer customer;
 
         if (id != null) {
-            customer = getCustomer(id);
+            customer = getEntity(id);
         } else {
             customer = new Customer();
         }
@@ -100,11 +100,6 @@ public class DefaultCustomerService implements CustomerService {
 
         customerRepository.add(customer);
         return customer;
-    }
-
-    private Customer getCustomer(Long id) {
-        return customerRepository.getById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(String.format("Customer with id %s not found", id)));
     }
 
     private Customer update(Customer customer, CustomerDto customerDto) {

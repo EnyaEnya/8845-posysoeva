@@ -1,29 +1,25 @@
 package ru.cft.focusstart.repository.order;
 
 import ru.cft.focusstart.entity.Order;
-import ru.cft.focusstart.entity.OrderEntity;
+import ru.cft.focusstart.entity.OrderItem;
+import ru.cft.focusstart.repository.AbstractRepository;
 import ru.cft.focusstart.repository.DataAccessException;
-import ru.cft.focusstart.repository.DataSourceProvider;
 
-import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
-import static ru.cft.focusstart.repository.reader.OrderEntityReader.readOrderEntity;
+import static ru.cft.focusstart.repository.reader.OrderItemReader.readOrderItem;
 import static ru.cft.focusstart.repository.reader.OrderReader.readOrder;
 
-public class JdbcOrderRepository implements OrderRepository {
+public class JdbcOrderRepository extends AbstractRepository<Order> implements OrderRepository {
 
     private static final JdbcOrderRepository INSTANCE = new JdbcOrderRepository();
 
     public static JdbcOrderRepository getInstance() {
         return INSTANCE;
-    }
-
-    private final DataSource dataSource;
-
-    private JdbcOrderRepository() {
-        this.dataSource = DataSourceProvider.getDataSource();
     }
 
     private static final String INSERT_QUERY =
@@ -35,15 +31,6 @@ public class JdbcOrderRepository implements OrderRepository {
                     "set customer_id = ? " +
                     "where id = ?";
 
-
-    private static final String INSERT_ENTITIES_QUERY =
-            "insert into order_entity (order_id, product_id, value) " +
-                    "values (?, ?, ?)";
-
-    private static final String UPDATE_ENTITIES_QUERY =
-            "update order_entity " +
-                    "set product_id = ?, value = ? " +
-                    " where id = ?";
 
     private static final String GET_QUERY =
             "select o.id          order_id," +
@@ -65,55 +52,6 @@ public class JdbcOrderRepository implements OrderRepository {
     private static final String DELETE_ORDER_QUERY =
             "delete from order_table where id = ?";
 
-    private static final String DELETE_ENTITY_QUERY =
-            "delete from order_entity where order_id = ?";
-
-
-    @Override
-    public void add(Order order) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            ps.setLong(1, order.getCustomerId());
-
-            ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-            Long id = rs.next() ? rs.getLong(1) : null;
-            if (id == null) {
-                throw new SQLException("Unexpected error - could not obtain id");
-            }
-            order.setId(id);
-        } catch (Exception e) {
-            throw new DataAccessException(e);
-        }
-    }
-
-    @Override
-    public Optional<Order> getById(Long id) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(GET_BY_ID_QUERY)
-        ) {
-            ps.setLong(1, id);
-
-            ResultSet rs = ps.executeQuery();
-
-            Collection<Order> orders = readOrdersList(rs);
-
-            if (orders.isEmpty()) {
-                return Optional.empty();
-            } else if (orders.size() == 1) {
-                return Optional.of(orders.iterator().next());
-            } else {
-                throw new SQLException("Unexpected result set size");
-            }
-        } catch (Exception e) {
-            throw new DataAccessException(e);
-        }
-    }
-
     @Override
     public List<Order> getByCustomerId(Long id) {
         try (
@@ -132,75 +70,39 @@ public class JdbcOrderRepository implements OrderRepository {
     }
 
     @Override
-    public void update(Order order) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(UPDATE_QUERY)
-        ) {
-            ps.setLong(1, order.getCustomerId());
-            ps.setLong(2, order.getId());
-            ps.executeUpdate();
-        } catch (Exception e) {
-            throw new DataAccessException(e);
-        }
+    protected String getByIdQuery() {
+        return GET_BY_ID_QUERY;
     }
 
     @Override
-    public void insertOrderEntity(OrderEntity orderEntity) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(INSERT_ENTITIES_QUERY, Statement.RETURN_GENERATED_KEYS);
-        ) {
-            ps.setLong(1, orderEntity.getOrderId());
-            ps.setLong(2, orderEntity.getProductId());
-            ps.setLong(3, orderEntity.getValue());
-            ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-            Long id = rs.next() ? rs.getLong(1) : null;
-            if (id == null) {
-                throw new SQLException("Unexpected error - could not obtain id");
-            }
-            orderEntity.setId(id);
-
-        } catch (SQLException e) {
-            throw new DataAccessException(e);
-        }
+    protected String getDeleteQuery() {
+        return DELETE_ORDER_QUERY;
     }
 
     @Override
-    public void updateOrderEntity(OrderEntity orderEntity) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(UPDATE_ENTITIES_QUERY);
-        ) {
-            ps.setLong(1, orderEntity.getProductId());
-            ps.setLong(2, orderEntity.getValue());
-            ps.setLong(3, orderEntity.getId());
-            ps.executeUpdate();
-
-
-        } catch (SQLException e) {
-            throw new DataAccessException(e);
-        }
+    protected String getUpdateQuery() {
+        return UPDATE_QUERY;
     }
 
     @Override
-    public void delete(Order order) {
-        delete(DELETE_ENTITY_QUERY, order.getId());
-        delete(DELETE_ORDER_QUERY, order.getId());
+    protected Collection<Order> readEntityList(ResultSet resultSet) throws SQLException {
+        return readOrdersList(resultSet);
     }
 
-    private void delete(String sql, Long id) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
-        ) {
-            ps.setLong(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new DataAccessException(e);
-        }
+    @Override
+    protected String getAddQuery() {
+        return INSERT_QUERY;
+    }
+
+    @Override
+    protected void prepareAddStatement(Order order, PreparedStatement preparedStatement) throws SQLException {
+        preparedStatement.setLong(1, order.getCustomerId());
+    }
+
+    @Override
+    protected void prepareUpdateStatement(Order order, PreparedStatement preparedStatement) throws SQLException {
+        preparedStatement.setLong(1, order.getCustomerId());
+        preparedStatement.setLong(2, order.getId());
     }
 
     private Collection<Order> readOrdersList(ResultSet rs) throws SQLException {
@@ -218,11 +120,11 @@ public class JdbcOrderRepository implements OrderRepository {
                 continue;
             }
 
-            OrderEntity orderEntity = readOrderEntity(rs);
+            OrderItem orderItem = readOrderItem(rs);
 
-            if (orderEntity.getId() != 0) {
-                orderEntity.setOrderId(orderId);
-                order.getOrderEntities().add(orderEntity);
+            if (orderItem.getId() != 0) {
+                orderItem.setOrderId(orderId);
+                order.getOrderEntities().add(orderItem);
             }
         }
         return result.values();

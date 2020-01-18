@@ -1,20 +1,20 @@
 package ru.cft.focusstart.repository.customer;
 
 import ru.cft.focusstart.entity.Customer;
-import ru.cft.focusstart.entity.Order;
+import ru.cft.focusstart.repository.AbstractRepository;
 import ru.cft.focusstart.repository.DataAccessException;
-import ru.cft.focusstart.repository.DataSourceProvider;
 
-import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import static ru.cft.focusstart.repository.reader.CustomerReader.readCustomer;
 
-public class JdbcCustomerRepository implements CustomerRepository {
+public class JdbcCustomerRepository extends AbstractRepository<Customer> implements CustomerRepository {
 
     private static final String ADD_QUERY =
             "insert into customer (first_name, last_name, email, phone) " +
@@ -48,62 +48,8 @@ public class JdbcCustomerRepository implements CustomerRepository {
 
     private static final JdbcCustomerRepository INSTANCE = new JdbcCustomerRepository();
 
-    private final DataSource dataSource;
-
-    private JdbcCustomerRepository() {
-        this.dataSource = DataSourceProvider.getDataSource();
-    }
-
     public static JdbcCustomerRepository getInstance() {
         return INSTANCE;
-    }
-
-    @Override
-    public void add(Customer customer) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(ADD_QUERY, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            ps.setString(1, customer.getFirstName());
-            ps.setString(2, customer.getLastName());
-            ps.setString(3, customer.getEmail());
-            ps.setString(4, customer.getPhone());
-
-            ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-            Long id = rs.next() ? rs.getLong(1) : null;
-            if (id == null) {
-                throw new SQLException("Unexpected error - could not obtain id");
-            }
-            customer.setId(id);
-        } catch (Exception e) {
-            throw new DataAccessException(e);
-        }
-    }
-
-    @Override
-    public Optional<Customer> getById(Long id) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(GET_BY_ID_QUERY)
-        ) {
-            ps.setLong(1, id);
-
-            ResultSet rs = ps.executeQuery();
-
-            Collection<Customer> customers = readCustomersList(rs);
-
-            if (customers.isEmpty()) {
-                return Optional.empty();
-            } else if (customers.size() == 1) {
-                return Optional.of(customers.iterator().next());
-            } else {
-                throw new SQLException("Unexpected result set size");
-            }
-        } catch (Exception e) {
-            throw new DataAccessException(e);
-        }
     }
 
     @Override
@@ -126,35 +72,45 @@ public class JdbcCustomerRepository implements CustomerRepository {
     }
 
     @Override
-    public void update(Customer customer) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(UPDATE_QUERY)
-        ) {
-            ps.setString(1, customer.getFirstName());
-            ps.setString(2, customer.getLastName());
-            ps.setString(3, customer.getEmail());
-            ps.setString(4, customer.getPhone());
-            ps.setLong(5, customer.getId());
-
-            ps.executeUpdate();
-        } catch (Exception e) {
-            throw new DataAccessException(e);
-        }
+    protected String getAddQuery() {
+        return ADD_QUERY;
     }
 
     @Override
-    public void delete(Customer customer) {
-        try (
-                Connection con = dataSource.getConnection();
-                PreparedStatement ps = con.prepareStatement(DELETE_QUERY)
-        ) {
-            ps.setLong(1, customer.getId());
+    protected String getByIdQuery() {
+        return GET_BY_ID_QUERY;
+    }
 
-            ps.executeUpdate();
-        } catch (Exception e) {
-            throw new DataAccessException(e);
-        }
+    @Override
+    protected String getDeleteQuery() {
+        return DELETE_QUERY;
+    }
+
+    @Override
+    protected String getUpdateQuery() {
+        return UPDATE_QUERY;
+    }
+
+    @Override
+    protected Collection<Customer> readEntityList(ResultSet resultSet) throws SQLException {
+        return readCustomersList(resultSet);
+    }
+
+    @Override
+    protected void prepareAddStatement(Customer customer, PreparedStatement preparedStatement) throws SQLException {
+        prepareFieldsValues(customer, preparedStatement);
+    }
+
+    @Override
+    protected void prepareUpdateStatement(Customer customer, PreparedStatement preparedStatement) throws SQLException {
+        preparedStatement.setLong(5, customer.getId());
+    }
+
+    private void prepareFieldsValues(Customer customer, PreparedStatement preparedStatement) throws SQLException {
+        preparedStatement.setString(1, customer.getFirstName());
+        preparedStatement.setString(2, customer.getLastName());
+        preparedStatement.setString(3, customer.getEmail());
+        preparedStatement.setString(4, customer.getPhone());
     }
 
     private Collection<Customer> readCustomersList(ResultSet rs) throws SQLException {
@@ -166,7 +122,4 @@ public class JdbcCustomerRepository implements CustomerRepository {
         return result;
     }
 
-    private Collection<Order> readOrdersList(ResultSet rs) throws SQLException {
-        return null;
-    }
 }

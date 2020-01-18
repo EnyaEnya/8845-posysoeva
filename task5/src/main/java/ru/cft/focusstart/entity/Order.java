@@ -4,24 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Order {
-
-    private Long id;
+public class Order extends AbstractEntity {
 
     private Long customerId;
 
-    private List<OrderEntity> orderEntities;
+    private List<OrderItem> orderEntities;
 
     public Order() {
         this.orderEntities = new ArrayList<>();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getCustomerId() {
@@ -32,11 +22,11 @@ public class Order {
         this.customerId = customerId;
     }
 
-    public List<OrderEntity> getOrderEntities() {
+    public List<OrderItem> getOrderEntities() {
         return orderEntities;
     }
 
-    public void setOrderEntities(List<OrderEntity> orderEntities) {
+    public void setOrderEntities(List<OrderItem> orderEntities) {
         this.orderEntities = orderEntities;
     }
 

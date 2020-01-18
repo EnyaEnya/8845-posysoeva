@@ -29,9 +29,9 @@ public class ProductServlet extends HttpServlet {
         try {
             String path = getPath(req);
             if (path.matches(PRODUCTS_PATTERN)) {
-                get(req, resp);
+                getAllProducts(req, resp);
             } else if (path.matches(PRODUCT_PATTERN)) {
-                getById(req, resp);
+                getProductById(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -45,7 +45,7 @@ public class ProductServlet extends HttpServlet {
         try {
             String path = getPath(req);
             if (path.matches(PRODUCTS_PATTERN)) {
-                create(req, resp);
+                createProduct(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -59,7 +59,7 @@ public class ProductServlet extends HttpServlet {
         try {
             String path = getPath(req);
             if (path.matches(PRODUCT_PATTERN)) {
-                merge(req, resp);
+                updateProduct(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -73,7 +73,7 @@ public class ProductServlet extends HttpServlet {
         try {
             String path = getPath(req);
             if (path.matches(PRODUCT_PATTERN)) {
-                delete(req, resp);
+                deleteProduct(req, resp);
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -82,28 +82,28 @@ public class ProductServlet extends HttpServlet {
         }
     }
 
-    private void create(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void createProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         ProductDto request = mapper.readValue(req.getInputStream(), ProductDto.class);
 
         ProductDto response = productService.create(request);
         writeResp(resp, response);
     }
 
-    private void getById(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void getProductById(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long id = getPathPart(getPath(req), PRODUCT_PATTERN, "id");
 
         ProductDto response = productService.getById(id);
         writeResp(resp, response);
     }
 
-    private void get(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void getAllProducts(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String title = req.getParameter("title");
 
         List<ProductDto> response = productService.get(title);
         writeResp(resp, response);
     }
 
-    private void merge(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void updateProduct(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Long id = getPathPart(getPath(req), PRODUCT_PATTERN, "id");
         ProductDto request = mapper.readValue(req.getInputStream(), ProductDto.class);
 
@@ -111,7 +111,7 @@ public class ProductServlet extends HttpServlet {
         writeResp(resp, response);
     }
 
-    private void delete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void deleteProduct(HttpServletRequest req, HttpServletResponse resp) {
         Long id = getPathPart(getPath(req), PRODUCT_PATTERN, "id");
 
         productService.delete(id);

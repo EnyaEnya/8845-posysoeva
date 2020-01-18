@@ -2,22 +2,26 @@ package ru.cft.focusstart.service.order;
 
 import ru.cft.focusstart.api.dto.OrderDto;
 import ru.cft.focusstart.entity.Order;
-import ru.cft.focusstart.entity.OrderEntity;
-import ru.cft.focusstart.exception.ObjectNotFoundException;
+import ru.cft.focusstart.entity.OrderItem;
 import ru.cft.focusstart.mapper.OrderMapper;
 import ru.cft.focusstart.repository.order.JdbcOrderRepository;
 import ru.cft.focusstart.repository.order.OrderRepository;
+import ru.cft.focusstart.repository.orderitem.JdbcOrderItemRepository;
+import ru.cft.focusstart.repository.orderitem.OrderItemRepository;
+import ru.cft.focusstart.service.AbstractService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.cft.focusstart.service.validation.Validator.checkNotNull;
 
-public class DefaultOrderService implements OrderService {
+public class DefaultOrderService extends AbstractService<Order, OrderDto, OrderRepository, OrderMapper> implements OrderService {
 
     private static final DefaultOrderService INSTANCE = new DefaultOrderService();
 
     private final OrderRepository orderRepository = JdbcOrderRepository.getInstance();
+
+    private final OrderItemRepository orderItemRepository = JdbcOrderItemRepository.getInstance();
 
     private final OrderMapper orderMapper = OrderMapper.getInstance();
 
@@ -29,20 +33,16 @@ public class DefaultOrderService implements OrderService {
     }
 
     @Override
+    public OrderMapper getMapper() {
+        return orderMapper;
+    }
+
+    @Override
     public OrderDto create(Long customerId) {
         OrderDto orderDto = new OrderDto(customerId);
         validate(orderDto);
 
         Order order = add(orderDto);
-
-        return orderMapper.toDto(order);
-    }
-
-    @Override
-    public OrderDto getById(Long customerId, Long id) {
-        checkNotNull("id", id);
-
-        Order order = getOrder(id);
 
         return orderMapper.toDto(order);
     }
@@ -66,11 +66,13 @@ public class DefaultOrderService implements OrderService {
 
     @Override
     public void delete(Long id) {
-        checkNotNull("id", id);
+        orderItemRepository.delete(id);
+        super.delete(id);
+    }
 
-        Order order = getOrder(id);
-
-        orderRepository.delete(order);
+    @Override
+    protected OrderRepository getRepository() {
+        return orderRepository;
     }
 
     private void validate(OrderDto orderDto) {
@@ -83,11 +85,11 @@ public class DefaultOrderService implements OrderService {
         order.setCustomerId(orderDto.getCustomerId());
 
         order.setOrderEntities(orderDto.getOrderEntities().stream().map(orderEntityDto -> {
-            OrderEntity orderEntity = new OrderEntity();
+            OrderItem orderItem = new OrderItem();
 
-            orderEntity.setProductId(orderEntityDto.getProductId());
-            orderEntity.setValue(orderEntityDto.getValue());
-            return orderEntity;
+            orderItem.setProductId(orderEntityDto.getProductId());
+            orderItem.setValue(orderEntityDto.getValue());
+            return orderItem;
         }).collect(Collectors.toList()));
 
         orderRepository.add(order);
@@ -95,30 +97,23 @@ public class DefaultOrderService implements OrderService {
         return order;
     }
 
-
-
-    private Order getOrder(Long id) {
-        return orderRepository.getById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(String.format("Order with id %s not found", id)));
-    }
-
     private Order update(Order order, OrderDto orderDto) {
         order.setCustomerId(orderDto.getCustomerId());
 
         order.setOrderEntities(orderDto.getOrderEntities().stream().map(orderEntityDto -> {
-            OrderEntity orderEntity = new OrderEntity();
-            orderEntity.setId(orderEntityDto.getId());
-            orderEntity.setOrderId(order.getId());
-            orderEntity.setProductId(orderEntityDto.getProductId());
-            orderEntity.setValue(orderEntityDto.getValue());
-            return orderEntity;
+            OrderItem orderItem = new OrderItem();
+            orderItem.setId(orderEntityDto.getId());
+            orderItem.setOrderId(order.getId());
+            orderItem.setProductId(orderEntityDto.getProductId());
+            orderItem.setValue(orderEntityDto.getValue());
+            return orderItem;
         }).collect(Collectors.toList()));
 
         order.getOrderEntities().forEach(entity -> {
             if (entity.getId() == null) {
-                orderRepository.insertOrderEntity(entity);
+                orderItemRepository.add(entity);
             } else {
-                orderRepository.updateOrderEntity(entity);
+                orderItemRepository.update(entity);
             }
         });
 

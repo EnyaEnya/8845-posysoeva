@@ -1,13 +1,13 @@
 package ru.cft.focusstart.mapper;
 
 import ru.cft.focusstart.api.dto.OrderDto;
-import ru.cft.focusstart.api.dto.OrderEntityDto;
+import ru.cft.focusstart.api.dto.OrderItemDto;
 import ru.cft.focusstart.entity.Order;
-import ru.cft.focusstart.entity.OrderEntity;
+import ru.cft.focusstart.entity.OrderItem;
 
 import java.util.stream.Collectors;
 
-public class OrderMapper {
+public class OrderMapper extends AbstractEntityMapper<Order, OrderDto> {
 
     private static final OrderMapper INSTANCE = new OrderMapper();
 
@@ -26,11 +26,11 @@ public class OrderMapper {
                 .build();
     }
 
-    private OrderEntityDto toDto(OrderEntity orderEntity) {
-        return OrderEntityDto.builder()
-                .id(orderEntity.getId())
-                .value(orderEntity.getValue())
-                .productId(orderEntity.getProductId())
+    private OrderItemDto toDto(OrderItem orderItem) {
+        return OrderItemDto.builder()
+                .id(orderItem.getId())
+                .value(orderItem.getValue())
+                .productId(orderItem.getProductId())
                 .build();
     }
 

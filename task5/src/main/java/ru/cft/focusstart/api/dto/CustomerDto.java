@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.Objects;
 
 @JsonDeserialize(builder = CustomerDto.Builder.class)
-public class CustomerDto {
-
-    private final Long id;
+public class CustomerDto extends AbstractEntityDto {
 
     private final String firstName;
 
@@ -35,7 +33,7 @@ public class CustomerDto {
         }
 
         private Builder(CustomerDto customerDto) {
-            this.id = customerDto.id;
+            this.id = customerDto.getId();
             this.firstName = customerDto.firstName;
             this.lastName = customerDto.lastName;
             this.email = customerDto.email;
@@ -73,7 +71,7 @@ public class CustomerDto {
     }
 
     private CustomerDto(Long id, String firstName, String lastName, String email, String phone) {
-        this.id = id;
+        super(id);
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -86,10 +84,6 @@ public class CustomerDto {
 
     public Builder toBuilder() {
         return new Builder(this);
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getFirstName() {
@@ -113,7 +107,7 @@ public class CustomerDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CustomerDto customerDto = (CustomerDto) o;
-        return Objects.equals(id, customerDto.id) &&
+        return Objects.equals(this.getId(), customerDto.getId()) &&
                 Objects.equals(firstName, customerDto.firstName) &&
                 Objects.equals(lastName, customerDto.lastName)&&
                 Objects.equals(email, customerDto.email)&&
@@ -122,13 +116,13 @@ public class CustomerDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, phone);
+        return Objects.hash(this.getId(), firstName, lastName, email, phone);
     }
 
     @Override
     public String toString() {
         return "ProductDto{" +
-                "id=" + id +
+                "id=" + this.getId() +
                 ", first name='" + firstName + '\'' +
                 ", last name='" + lastName + '\'' +
                 ", email='" + email + '\'' +

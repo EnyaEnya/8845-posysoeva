@@ -1,19 +1,16 @@
 package ru.cft.focusstart.service.order;
 
 import ru.cft.focusstart.api.dto.OrderDto;
+import ru.cft.focusstart.service.EntityService;
 
 import java.util.List;
 
-public interface OrderService {
+public interface OrderService extends EntityService<OrderDto> {
 
     OrderDto create(Long customerId);
-
-    OrderDto getById(Long customerId, Long id);
 
     List<OrderDto> getByCustomerId(Long customerId);
 
     OrderDto merge(OrderDto orderDto);
-
-    void delete(Long id);
 
 }

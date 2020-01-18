@@ -1,19 +1,12 @@
 package ru.cft.focusstart.repository.customer;
 
 import ru.cft.focusstart.entity.Customer;
+import ru.cft.focusstart.repository.EntityRepository;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface CustomerRepository {
-
-    void add(Customer customer);
-
-    Optional<Customer> getById(Long id);
+public interface CustomerRepository extends EntityRepository<Customer> {
 
     List<Customer> get(String firstName, String lastName);
 
-    void update(Customer customer);
-
-    void delete(Customer customer);
 }

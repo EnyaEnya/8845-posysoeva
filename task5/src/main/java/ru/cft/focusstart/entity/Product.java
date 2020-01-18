@@ -3,9 +3,7 @@ package ru.cft.focusstart.entity;
 import java.util.List;
 import java.util.Objects;
 
-public class Product {
-
-    private Long id;
+public class Product extends AbstractEntity {
 
     private String title;
 
@@ -14,14 +12,6 @@ public class Product {
     private long price;
 
     private List<Customer> customers;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;

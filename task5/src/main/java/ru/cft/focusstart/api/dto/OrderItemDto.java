@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 import java.util.Objects;
 
-@JsonDeserialize(builder = OrderEntityDto.Builder.class)
-public class OrderEntityDto {
-
-    private Long id;
+@JsonDeserialize(builder = OrderItemDto.Builder.class)
+public class OrderItemDto extends AbstractEntityDto{
 
     private Long value;
 
@@ -26,52 +24,44 @@ public class OrderEntityDto {
         private Builder() {
         }
 
-        private Builder(OrderEntityDto orderEntityDto) {
-            this.id = orderEntityDto.id;
-            this.value = orderEntityDto.value;
-            this.productId = orderEntityDto.productId;
+        private Builder(OrderItemDto orderItemDto) {
+            this.id = orderItemDto.getId();
+            this.value = orderItemDto.value;
+            this.productId = orderItemDto.productId;
         }
 
-        public OrderEntityDto.Builder id(Long id) {
+        public OrderItemDto.Builder id(Long id) {
             this.id = id;
             return this;
         }
 
-        public OrderEntityDto.Builder value(Long value) {
+        public OrderItemDto.Builder value(Long value) {
             this.value = value;
             return this;
         }
 
-        public OrderEntityDto.Builder productId(Long productId) {
+        public OrderItemDto.Builder productId(Long productId) {
             this.productId = productId;
             return this;
         }
 
-        public OrderEntityDto build() {
-            return new OrderEntityDto(this.id, this.value, this.productId);
+        public OrderItemDto build() {
+            return new OrderItemDto(this.id, this.value, this.productId);
         }
     }
 
-    public OrderEntityDto(Long id, Long value, Long productId) {
-        this.id = id;
+    public OrderItemDto(Long id, Long value, Long productId) {
+        super(id);
         this.value = value;
         this.productId = productId;
     }
 
-    public static OrderEntityDto.Builder builder() {
-        return new OrderEntityDto.Builder();
+    public static OrderItemDto.Builder builder() {
+        return new OrderItemDto.Builder();
     }
 
-    public OrderEntityDto.Builder toBuilder() {
-        return new OrderEntityDto.Builder(this);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public OrderItemDto.Builder toBuilder() {
+        return new OrderItemDto.Builder(this);
     }
 
     public Long getValue() {
@@ -94,21 +84,21 @@ public class OrderEntityDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrderEntityDto that = (OrderEntityDto) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(value, that.value) &&
-                Objects.equals(productId, that.productId);
+        OrderItemDto orderItemDto = (OrderItemDto) o;
+        return Objects.equals(this.getId(), orderItemDto.getId()) &&
+                Objects.equals(value, orderItemDto.value) &&
+                Objects.equals(productId, orderItemDto.productId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, value, productId);
+        return Objects.hash(this.getId(), value, productId);
     }
 
     @Override
     public String toString() {
-        return "OrderEntityDto{" +
-                "id=" + id +
+        return "OrderItemDto{" +
+                "id=" + this.getId() +
                 ", value=" + value +
                 ", productId=" + productId +
                 '}';

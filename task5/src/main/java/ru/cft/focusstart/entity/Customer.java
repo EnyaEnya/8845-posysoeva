@@ -2,9 +2,7 @@ package ru.cft.focusstart.entity;
 
 import java.util.Objects;
 
-public class Customer {
-
-    private Long id;
+public class Customer extends AbstractEntity{
 
     private String firstName;
 
@@ -13,14 +11,6 @@ public class Customer {
     private String email;
 
     private String phone;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getFirstName() {
         return firstName;
